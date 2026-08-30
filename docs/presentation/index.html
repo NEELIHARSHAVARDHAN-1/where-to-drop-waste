@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>WHERE TO DROP WASTE — Presentation</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,"Segoe UI",system-ui,sans-serif;background:#0f172a;color:#f1f5f9;min-height:100vh}
+
+  /* ── Nav ── */
+  .nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(15,23,42,.97);border-bottom:1px solid #1e3a5f;display:flex;align-items:center;justify-content:space-between;padding:10px 24px}
+  .nav-title{font-size:13px;font-weight:700;color:#22c55e;letter-spacing:.04em}
+  .nav-controls{display:flex;align-items:center;gap:8px}
+  .nav-btn{background:#1e293b;border:1px solid #334155;color:#94a3b8;padding:5px 14px;border-radius:6px;cursor:pointer;font-size:13px;transition:all .15s}
+  .nav-btn:hover{background:#22c55e;color:#0f172a;border-color:#22c55e}
+  .slide-counter{font-size:12px;color:#64748b;min-width:60px;text-align:center}
+
+  /* ── Slides ── */
+  .slides-wrap{padding-top:52px}
+  .slide{display:none;min-height:calc(100vh - 52px);padding:48px 40px 56px;max-width:980px;margin:0 auto;flex-direction:column}
+  .slide.active{display:flex}
+
+  /* ── Cover ── */
+  .slide-cover{align-items:center;justify-content:center;text-align:center;background:radial-gradient(ellipse at center,#0f2d1a 0%,#0f172a 70%)}
+  .cover-emoji{font-size:68px;margin-bottom:20px}
+  .cover-title{font-size:44px;font-weight:800;letter-spacing:-.02em;color:#22c55e;line-height:1.1;margin-bottom:12px}
+  .cover-sub{font-size:16px;color:#94a3b8;margin-bottom:36px;max-width:620px;line-height:1.7}
+  .cover-tags{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:32px}
+
+  /* ── Tags / pills ── */
+  .tag{background:#1e293b;border:1px solid #334155;color:#94a3b8;padding:4px 12px;border-radius:20px;font-size:12px}
+  .tag.g{background:#14532d;border-color:#22c55e;color:#86efac}
+  .tag.b{background:#1e3a5f;border-color:#3b82f6;color:#93c5fd}
+
+  /* ── Slide header ── */
+  .sh{display:flex;align-items:center;gap:14px;margin-bottom:26px}
+  .sn{background:#22c55e;color:#0f172a;font-size:11px;font-weight:700;padding:4px 10px;border-radius:4px;letter-spacing:.08em;white-space:nowrap}
+  .st{font-size:26px;font-weight:700;color:#f1f5f9}
+  .sa{color:#22c55e}
+
+  /* ── Grids ── */
+  .g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+  .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+
+  /* ── Card ── */
+  .card{background:#1e293b;border:1px solid #334155;border-radius:10px;padding:16px}
+  .card.cg{border-color:#22c55e44}
+  .card.cb{border-color:#3b82f644}
+  .ci{font-size:26px;margin-bottom:8px}
+  .ct{font-size:14px;font-weight:700;color:#f1f5f9;margin-bottom:5px}
+  .cb2{font-size:13px;color:#94a3b8;line-height:1.6}
+
+  /* ── Problem/solution lists ── */
+  .plist{list-style:none;display:flex;flex-direction:column;gap:10px}
+  .plist li{background:#1e293b;border-left:3px solid #ef4444;border-radius:0 8px 8px 0;padding:11px 15px;font-size:14px;color:#cbd5e1;line-height:1.5}
+  .plist li strong{color:#fca5a5}
+  .slist{list-style:none;display:flex;flex-direction:column;gap:8px}
+  .slist li{background:#0f2d1a;border-left:3px solid #22c55e;border-radius:0 8px 8px 0;padding:10px 15px;font-size:13px;color:#d1fae5;line-height:1.5}
+
+  /* ── Feature grid ── */
+  .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .fi{background:#1e293b;border:1px solid #334155;border-radius:8px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start}
+  .fic{font-size:20px;flex-shrink:0}
+  .fit{font-size:13px;color:#cbd5e1;line-height:1.5}
+  .fit strong{color:#f1f5f9;display:block;margin-bottom:2px}
+
+  /* ── Tech table ── */
+  .ttable{width:100%;border-collapse:collapse}
+  .ttable th{background:#1e293b;color:#94a3b8;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:10px 14px;text-align:left;border-bottom:1px solid #334155}
+  .ttable td{padding:9px 14px;font-size:13px;color:#cbd5e1;border-bottom:1px solid #1e293b}
+  .ttable tr:last-child td{border-bottom:none}
+  .bp{display:inline-block;background:#14532d;border:1px solid #22c55e;color:#86efac;font-size:11px;padding:2px 8px;border-radius:10px;margin:1px}
+  .bb{background:#1e3a5f;border-color:#3b82f6;color:#93c5fd}
+
+  /* ── Pipeline ── */
+  .pipe{display:flex;flex-direction:column;gap:0}
+  .ps{background:#1e293b;border:1px solid #334155;border-radius:8px;padding:11px 15px;font-size:13px;color:#cbd5e1}
+  .ps.ph{background:#0f2d1a;border-color:#22c55e;color:#d1fae5}
+  .ps.pr{background:#2d1515;border-color:#ef444444}
+  .ps strong{color:#f1f5f9;display:block;font-size:13px;margin-bottom:2px}
+  .pa{display:flex;align-items:center;justify-content:center;color:#22c55e;font-size:17px;padding:3px}
+  .p2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:3px 0}
+
+  /* ── API table ── */
+  .atable{width:100%;border-collapse:collapse}
+  .atable th{background:#0f172a;color:#64748b;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:8px 12px;text-align:left;border-bottom:1px solid #334155}
+  .atable td{padding:7px 12px;font-size:12px;color:#94a3b8;border-bottom:1px solid #1e293b}
+  .atable tr:hover td{background:#1e293b}
+  .mth{font-weight:700;font-size:11px;padding:2px 7px;border-radius:4px}
+  .mg{background:#14532d;color:#86efac}
+  .mb{background:#1e3a5f;color:#93c5fd}
+  .ep{font-family:monospace;color:#f1f5f9;font-size:12px}
+
+  /* ── Stat cards ── */
+  .snum{font-size:34px;font-weight:800;color:#22c55e;line-height:1}
+  .slbl{font-size:11px;color:#64748b;margin-top:4px}
+
+  /* ── Bob items ── */
+  .bi{background:#1e293b;border:1px solid #334155;border-radius:8px;padding:12px 14px;font-size:13px;color:#cbd5e1;line-height:1.5}
+  .bi .tool{color:#22c55e;font-weight:600}
+
+  /* ── Result pills ── */
+  .rp{background:#0f2d1a;border:1px solid #22c55e;color:#86efac;padding:7px 16px;border-radius:20px;font-size:13px;font-weight:600}
+  .rrow{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+
+  /* ── Info box ── */
+  .ibox{background:#1e293b;border:1px solid #334155;border-radius:8px;padding:12px 14px}
+  .ibox.gr{background:#0f2d1a;border-color:#22c55e44}
+  .ibox.rd{background:#2d1515;border-color:#ef444444}
+  .sl{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#22c55e;margin-bottom:5px}
+
+  /* ── Arch layers ── */
+  .arch-fe{background:#1e3a5f;border:2px solid #3b82f6;border-radius:10px;padding:12px 16px}
+  .arch-be{background:#1e293b;border:2px solid #334155;border-radius:10px;padding:12px 16px}
+  .arch-lbl{font-size:11px;font-weight:700;letter-spacing:.08em;margin-bottom:8px}
+
+  /* ── Dots ── */
+  .dot-nav{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:100}
+  .dot{width:8px;height:8px;border-radius:50%;background:#334155;cursor:pointer;transition:background .2s;border:none}
+  .dot.active{background:#22c55e}
+
+  /* ── Footer ── */
+  .foot{margin-top:auto;padding-top:22px;border-top:1px solid #1e293b;font-size:11px;color:#475569;text-align:center}
+
+  pre{font-size:12px;color:#d1fae5;overflow:auto;line-height:1.6;background:#0f172a;border-radius:6px;padding:10px}
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <span class="nav-title">🌿 WHERE TO DROP WASTE</span>
+  <div class="nav-controls">
+    <button class="nav-btn" onclick="prevSlide()">← Prev</button>
+    <span class="slide-counter" id="counter">1 / 12</span>
+    <button class="nav-btn" onclick="nextSlide()">Next →</button>
+  </div>
+</div>
+
+<div class="slides-wrap">
+
+<!-- ─────────────── SLIDE 1: COVER ─────────────── -->
+<div class="slide slide-cover active" id="s1">
+  <div class="cover-emoji">🌿</div>
+  <div class="cover-title">WHERE TO DROP WASTE</div>
+  <div class="cover-sub">
+    AI-powered waste segregation assistant — camera-based TFLite classification,
+    location-aware recycling rules for all Indian states and UTs,
+    gamification, and a complete training data pipeline.
+  </div>
+  <div class="cover-tags">
+    <span class="tag g">TensorFlow Lite (model_unquant.tflite)</span>
+    <span class="tag g">Python 3.10 + TF 2.20</span>
+    <span class="tag b">React 18 + Vite + Tailwind</span>
+    <span class="tag b">Node.js + Express</span>
+    <span class="tag">SQL.js / SQLite — 13 tables</span>
+    <span class="tag">36 India States &amp; UTs</span>
+    <span class="tag">Camera + Flip + Retake</span>
+    <span class="tag">66 Tests Passing</span>
+  </div>
+  <div style="color:#475569;font-size:12px">Built with IBM Bob &nbsp;·&nbsp; 2025</div>
+</div>
+
+<!-- ─────────────── SLIDE 2: PROBLEM ─────────────── -->
+<div class="slide" id="s2">
+  <div class="sh"><span class="sn">02</span><h2 class="st">The <span class="sa">Problem</span></h2></div>
+
+  <ul class="plist" style="margin-bottom:20px">
+    <li><strong>Confusion at the bin</strong> — People don't know which category an item belongs to. Is a greasy pizza box recyclable? Is broken glass hazardous?</li>
+    <li><strong>No location context</strong> — Recycling rules differ across India's 36 states and UTs. Generic global guidance doesn't apply locally.</li>
+    <li><strong>No visual identification</strong> — Text search requires knowing what the item is. Camera-based identification makes waste sorting instant and effortless.</li>
+    <li><strong>Low motivation</strong> — Without visible feedback and rewards, sustainable habits don't stick. People need to see their environmental impact.</li>
+    <li><strong>AI systems don't improve</strong> — When a model misidentifies an item, that error is lost. There's no mechanism to collect feedback and improve the model over time.</li>
+  </ul>
+
+  <div class="ibox gr">
+    <div class="sl">Our Goal</div>
+    <p style="font-size:15px;color:#d1fae5;line-height:1.7">
+      Build a system that <strong style="color:#22c55e">instantly classifies waste items from a camera photo</strong>,
+      maps them to the right disposal category, applies <strong style="color:#22c55e">location-specific rules for India</strong>,
+      rewards eco-friendly behaviour, and <strong style="color:#22c55e">continuously collects training data</strong>
+      to improve the AI model over time.
+    </p>
+  </div>
+</div>
+
+<!-- ─────────────── SLIDE 3: SOLUTION ─────────────── -->
+<div class="slide" id="s3">
+  <div class="sh"><span class="sn">03</span><h2 class="st">The <span class="sa">Solution</span></h2></div>
+
+  <div class="g3" style="margin-bottom:16px">
+    <div class="card cg"><div class="ci">📸</div><div class="ct">Camera AI Classification</div><div class="cb2">Photograph any waste item. Real TFLite model (MobileNetV2 / Teachable Machine) classifies it with softmax confidence scoring.</div></div>
+    <div class="card cb"><div class="ci">📍</div><div class="ct">Location-Aware Rules</div><div class="cb2">All 28 states + 8 UTs of India with city-level recycling rules. Auto-detect via GPS or pick from hierarchical dropdown.</div></div>
+    <div class="card cg"><div class="ci">🏆</div><div class="ct">Gamified Experience</div><div class="cb2">Points, levels, badges, streaks, leaderboard, and community challenges keep users engaged and consistently motivated.</div></div>
+  </div>
+  <div class="g3">
+    <div class="card"><div class="ci">🔄</div><div class="ct">Training Data Pipeline</div><div class="cb2">Unknown items → user correction → admin review → approved dataset → offline Teachable Machine retraining. Production model never auto-retrained.</div></div>
+    <div class="card"><div class="ci">🌱</div><div class="ct">Environmental Impact</div><div class="cb2">Tracks CO₂ saved, water conserved, and energy recovered per classification. Cumulative dashboard with charts.</div></div>
+    <div class="card"><div class="ci">🔐</div><div class="ct">Secure &amp; Private</div><div class="cb2">JWT auth, bcrypt (salt=12), rate limiting, input validation. GPS coords used only for reverse geocoding — never stored.</div></div>
+  </div>
+</div>
+
+<!-- ─────────────── SLIDE 4: FEATURES ─────────────── -->
+<div class="slide" id="s4">
+  <div class="sh"><span class="sn">04</span><h2 class="st">Feature <span class="sa">Highlights</span></h2></div>
+
+  <div class="fgrid">
+    <div class="fi"><span class="fic">🤖</span><div class="fit"><strong>Real TFLite Inference</strong>model_unquant.tflite via Python 3.10 subprocess + tf.lite.Interpreter. Verified: bottle = 99.5%. No YOLO. No fake predictions.</div></div>
+    <div class="fi"><span class="fic">📷</span><div class="fit"><strong>Camera Capture</strong>getUserMedia() — live preview, flip front↔rear, capture frame via canvas, retake, confirm. Same /classify/image endpoint as uploads.</div></div>
+    <div class="fi"><span class="fic">🎯</span><div class="fit"><strong>Confidence Threshold</strong>Configurable TF_CONFIDENCE_THRESHOLD (default 70%). Below threshold: honest "Unable to identify" — user can retry or correct.</div></div>
+    <div class="fi"><span class="fic">🗺️</span><div class="fit"><strong>India Locations</strong>All 36 states/UTs + cities in india_locations.json. Dependent dropdowns. "Use My Location" button with Nominatim reverse geocoding.</div></div>
+    <div class="fi"><span class="fic">✏️</span><div class="fit"><strong>User Corrections</strong>Unknown/low-confidence → user corrects label → stored as training_candidate (image_path, predicted class, corrected class, user_id, timestamp).</div></div>
+    <div class="fi"><span class="fic">👨‍💼</span><div class="fit"><strong>Admin Review Workflow</strong>Admin views candidates, approves/rejects, downloads approved dataset manifest for offline Teachable Machine retraining.</div></div>
+    <div class="fi"><span class="fic">📊</span><div class="fit"><strong>Sustainability Dashboard</strong>History, recycling score, cumulative CO₂/water/energy saved, streak calendar, badge collection.</div></div>
+    <div class="fi"><span class="fic">♻️</span><div class="fit"><strong>10 Waste Categories</strong>Plastic, Paper/Cardboard, Glass, Metal, Organic, E-waste, Hazardous, Textile, Sanitary, General. Text classifier fallback always available.</div></div>
+  </div>
+</div>
+
+<!-- ─────────────── SLIDE 5: AI PIPELINE ─────────────── -->
+<div class="slide" id="s5">
+  <div class="sh"><span class="sn">05</span><h2 class="st">AI Classification <span class="sa">Pipeline</span></h2></div>
+
+  <div class="pipe">
+    <div class="ps"><strong>User Input</strong>Camera capture (getUserMedia + canvas) &nbsp;OR&nbsp; File upload (JPEG / PNG / WebP / GIF)</div>
+    <div class="pa">↓</div>
+    <div class="ps"><strong>Image Validation (preprocessing.js)</strong>Magic bytes check (JPEG ff d8 · PNG 89 50 · WebP 52 49 · GIF 47 49) · File size limit · Safe uuid-based filename</div>
+    <div class="pa">↓</div>
+    <div class="ps ph"><strong>🐍 TFLite Inference — Python 3.10 subprocess (tflite_infer.py)</strong>Node.js: sharp → JPEG → temp file → spawn(py -3.10) &nbsp;|&nbsp; Python: PIL open → resize 224×224 → normalize ÷255 → tf.lite.Interpreter → invoke() → JSON stdout</div>
+    <div class="pa">↓</div>
+    <div class="p2">
+      <div class="ps ph"><strong>✅ Confidence ≥ 70%</strong>Accept prediction → wasteCategoryMapping.js → waste category</div>
+      <div class="ps pr"><strong style="color:#fca5a5">⚠️ Confidence &lt; 70%</strong>"Unable to confidently identify" → correction form → training_candidates table</div>
+    </div>
+    <div class="pa">↓</div>
+    <div class="ps"><strong>Location Rules Overlay</strong>City rule → State rule → Country rule → General guidance &nbsp;·&nbsp; Clearly marked as sample data if unverified</div>
+    <div class="pa">↓</div>
+    <div class="ps"><strong>Result + Gamification + Impact</strong>Points awarded · CO₂/water/energy calculated · Classification saved to SQLite · Challenge progress updated</div>
+  </div>
+
+  <div class="ibox gr" style="margin-top:12px">
+    <span style="color:#22c55e;font-size:12px;font-weight:700">VERIFIED</span>
+    <span style="font-size:13px;color:#d1fae5;margin-left:10px">Real .webp bottle upload → <strong>bottle = 99.5% confidence</strong> ✅ &nbsp;|&nbsp; Synthetic image → harsha = 69.2% ✅</span>
+  </div>
+</div>
+
+<!-- ─────────────── SLIDE 6: TECH STACK ─────────────── -->
+<div class="slide" id="s6">
+  <div class="sh"><span class="sn">06</span><h2 class="st">Technology <span class="sa">Stack</span></h2></div>
+
+  <table class="ttable">
+    <thead><tr><th>Layer</th><th>Technology</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td>Frontend</td><td><span class="bp">React 18</span><span class="bp">Vite</span><span class="bp">Tailwind CSS</span><span class="bp">Recharts</span><span class="bp">Lucide Icons</span></td><td>SPA, routing, charts, responsive UI</td></tr>
+      <tr><td>Backend</td><td><span class="bp">Node.js v24</span><span class="bp">Express 4</span></td><td>REST API, file uploads, auth middleware, routes</td></tr>
+      <tr><td>Database</td><td><span class="bp">sql.js (SQLite)</span></td><td>Pure-JS SQLite · 13 tables · no native deps · auto-created</td></tr>
+      <tr><td>Authentication</td><td><span class="bp">JWT (7d)</span><span class="bp">bcrypt salt=12</span></td><td>Token-based auth, secure password hashing</td></tr>
+      <tr><td style="color:#22c55e;font-weight:700">AI / ML</td><td><span class="bp">TFLite model_unquant.tflite</span><span class="bp">TensorFlow 2.20</span><span class="bp">Python 3.10</span></td><td>Real TFLite inference via Python subprocess bridge</td></tr>
+      <tr><td>Image Processing</td><td><span class="bp">sharp</span><span class="bp">Pillow</span><span class="bp">Multer</span></td><td>Format conversion (WebP→JPEG), resize, upload handling</td></tr>
+      <tr><td>Camera</td><td><span class="bp">getUserMedia()</span><span class="bp">Canvas API</span></td><td>Live preview, flip camera, frame capture, retake</td></tr>
+      <tr><td>Location</td><td><span class="bp">Geolocation API</span><span class="bp">Nominatim OSM</span></td><td>GPS + reverse geocoding, no API key required</td></tr>
+      <tr><td>Security</td><td><span class="bp">helmet</span><span class="bp">cors</span><span class="bp">rate-limit</span><span class="bp">express-validator</span></td><td>Headers, CORS, 200 req/15min, input sanitization</td></tr>
+      <tr><td>Testing</td><td><span class="bp">Jest</span><span class="bp">Supertest</span></td><td>66 tests — unit + API integration (all passing)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="ibox gr" style="margin-top:14px;font-size:13px;color:#d1fae5">
+    <strong style="color:#22c55e">No YOLO &nbsp;·&nbsp; No Ultralytics &nbsp;·&nbsp; No MongoDB &nbsp;·&nbsp; No Firebase &nbsp;·&nbsp; No Cloud DB</strong>
+    — Only TFLite (Teachable Machine) and local SQLite storage.
+  </div>
+</div>
+
+<!-- ─────────────── SLIDE 7: ARCHITECTURE ─────────────── -->
+<div class="slide" id="s7">
+  <div class="sh"><span class="sn">07</span><h2 class="st">System <span class="sa">Architecture</span></h2></div>
+
+  <div style="display:grid;grid-template-rows:auto auto auto;gap:10px">
+    <div class="arch-fe">
+      <div class="arch-lbl" style="color:#93c5fd">FRONTEND — React 18 + Vite + Tailwind CSS (localhost:3000)</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <span class="tag b">Home</span><span class="tag b">Classify</span><span class="tag b">Dashboard</span>
+        <span class="tag b">Rules</span><span class="tag b">Challenges</span><span class="tag b">Leaderboard</span>
+        <span class="tag b">Learn</span><span class="tag b">Profile</span><span class="tag b">Onboarding</span>
+        <span class="tag g">CameraCapture.jsx</span><span class="tag g">LocationSelector.jsx</span>
+      </div>
+    </div>
+
+    <div style="text-align:center;color:#22c55e;font-size:14px;font-weight:600">↕ REST API / JWT Authorization (http://localhost:4000/api/)</div>
+
+    <div class="arch-be">
+      <div class="arch-lbl" style="color:#94a3b8">BACKEND — Node.js + Express (localhost:4000)</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div>
+          <div style="font-size:11px;color:#64748b;margin-bottom:5px">ROUTES</div>
+          <div style="display:flex;gap:4px;flex-wrap:wrap">
+            <span class="tag">auth</span><span class="tag">classify</span><span class="tag">rules</span>
+            <span class="tag">dashboard</span><span class="tag">impact</span><span class="tag">gamification</span>
+            <span class="tag">challenges</span><span class="tag">leaderboard</span><span class="tag">locations</span><span class="tag">admin</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:#64748b;margin-bottom:5px">VISION SERVICES</div>
+          <div style="display:flex;gap:4px;flex-wrap:wrap">
+            <span class="tag g">tensorflowLiteService.js</span>
+            <span class="tag g">tflite_infer.py (Python 3.10)</span>
+            <span class="tag">classificationPipeline.js</span>
+            <span class="tag">wasteCategoryMapping.js</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="g3">
+      <div class="ibox" style="text-align:center">
+        <div style="font-size:11px;color:#64748b;margin-bottom:4px">DATABASE</div>
+        <div style="font-size:13px;color:#cbd5e1">sql.js (SQLite)<br/>13 tables · In-memory</div>
+      </div>
+      <div class="ibox gr" style="text-align:center">
+        <div style="font-size:11px;color:#22c55e;margin-bottom:4px">AI MODEL</div>
+        <div style="font-size:13px;color:#d1fae5">model_unquant.tflite<br/>2 MB · MobileNetV2 · Python 3.10</div>
+      </div>
+      <div class="ibox" style="text-align:center">
+        <div style="font-size:11px;color:#64748b;margin-bottom:4px">LOCATION DATA</div>
+        <div style="font-size:13px;color:#cbd5e1">india_locations.json<br/>36 states/UTs + cities</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────── SLIDE 8: TRAINING PIPELINE ─────────────── -->
+<div class="slide" id="s8">
+  <div class="sh"><span class="sn">08</span><h2 class="st">Training Data <span class="sa">Pipeline</span></h2></div>
+
+  <div class="pipe">
+    <div class="p2" style="margin-bottom:0">
+      <div class="ps pr"><strong style="color:#fca5a5">Unknown / Low Confidence</strong>TF confidence below 70% threshold</div>
+      <div class="ps pr"><strong style="color:#fca5a5">"Object Not Recognized"</strong>Model cannot classify the item at all</div>
+    </div>
+    <div class="pa">↓</div>
+    <div class="ps"><strong>User Correction — POST /api/classify/correct</strong>User provides: corrected_class, corrected_category &nbsp;·&nbsp; Stored with: image_path, predicted_class, predicted_confidence, user_id, timestamp</div>
+    <div class="pa">↓</div>
+    <div class="ps ph"><strong>training_candidates table (SQLite)</strong>status: pending | admin_approved | rejected &nbsp;·&nbsp; Full metadata preserved for dataset use</div>
+    <div class="pa">↓</div>
+    <div class="ps"><strong>Admin Review — GET /api/admin/training-candidates</strong>Admin views image, predicted label, corrected label → POST /api/admin/training-candidates/:id/review → Approve or Reject</div>
+    <div class="pa">↓</div>
+    <div class="ps ph"><strong>Approved Dataset — GET /api/admin/approved-dataset</strong>Manifest of approved images + correct labels for offline Teachable Machine retraining</div>
+    <div class="pa">↓</div>
+    <div class="ps"><strong>Offline Retraining (teachablemachine.withgoogle.com)</strong>Export new TFLite → Replace model_unquant.tflite + labels.txt in backend/models/teachable_machine/ → Restart backend</div>
+  </div>
+
+  <div class="ibox rd" style="margin-top:12px;font-size:13px;color:#fca5a5">
+    ⚠️ <strong>The production model is NEVER retrained automatically during a user request.</strong>
+    This pipeline is for controlled, human-reviewed dataset collection only.
+  </div>
+</div>
+
+<!-- ─────────────── SLIDE 9: APPLICATION PAGES ─────────────── -->
+<div class="slide" id="s9">
+  <div class="sh"><span class="sn">09</span><h2 class="st">Application <span class="sa">Pages</span></h2></div>
+
+  <div class="g3">
+    <div class="card"><div class="ci">🏠</div><div class="ct">Home</div><div class="cb2">Landing page with feature overview, quick stats, and CTA to classify waste.</div></div>
+    <div class="card cg"><div class="ci">🤖</div><div class="ct">Classify ★</div><div class="cb2">Text / Image / Camera tabs. Location selector. TF result with confidence bar. Correction form for unknowns.</div></div>
+    <div class="card"><div class="ci">📖</div><div class="cb2"><div class="ct">Rules</div>Browse local recycling rules by state/city. Hierarchical lookup with sample data disclaimer.</div></div>
+    <div class="card cg"><div class="ci">📊</div><div class="ct">Dashboard ★</div><div class="cb2">Classification history, recycling score, CO₂/water/energy saved, streak calendar, charts.</div></div>
+    <div class="card"><div class="ci">🏆</div><div class="ct">Challenges</div><div class="cb2">Community challenges with progress bars. Join, track, and complete for bonus points.</div></div>
+    <div class="card"><div class="ci">🥇</div><div class="ct">Leaderboard</div><div class="cb2">Top recyclers ranked by points. Shows level, badges, recycling score.</div></div>
+    <div class="card"><div class="ci">📚</div><div class="ct">Learn</div><div class="cb2">Eco tips, waste facts, circular economy section. Educational reference content.</div></div>
+    <div class="card"><div class="ci">👤</div><div class="ct">Profile</div><div class="cb2">User stats, badges earned, corrections submitted, account settings.</div></div>
+    <div class="card"><div class="ci">🌱</div><div class="ct">Onboarding</div><div class="cb2">Quiz-based onboarding for new users. Sets recycling preferences and baseline knowledge.</div></div>
+  </div>
+
+  <div style="margin-top:10px;font-size:12px;color:#64748b">★ = pages enhanced with TF integration, camera, and location selector</div>
+</div>
+
+<!-- ─────────────── SLIDE 10: API ─────────────── -->
+<div class="slide" id="s10">
+  <div class="sh"><span class="sn">10</span><h2 class="st">API <span class="sa">Reference</span></h2></div>
+
+  <table class="atable" style="margin-bottom:14px">
+    <thead><tr><th>Method</th><th>Endpoint</th><th>Auth</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><span class="mth mb">POST</span></td><td class="ep">/api/classify/image</td><td>Optional</td><td>TFLite image classification (camera + file upload)</td></tr>
+      <tr><td><span class="mth mb">POST</span></td><td class="ep">/api/classify/text</td><td>Optional</td><td>Keyword-based text classification</td></tr>
+      <tr><td><span class="mth mb">POST</span></td><td class="ep">/api/classify/correct</td><td>Optional</td><td>Submit user correction → training_candidates</td></tr>
+      <tr><td><span class="mth mb">POST</span></td><td class="ep">/api/classify/confirm</td><td>Optional</td><td>Confirm or reject a classification result</td></tr>
+      <tr><td><span class="mth mg">GET</span></td><td class="ep">/api/classify/history</td><td>Required</td><td>Paginated classification history for user</td></tr>
+      <tr><td><span class="mth mg">GET</span></td><td class="ep">/api/classify/model-status</td><td>None</td><td>TFLite model availability + label metadata</td></tr>
+      <tr><td><span class="mth mg">GET</span></td><td class="ep">/api/locations/india/states</td><td>None</td><td>All 36 India states/UTs</td></tr>
+      <tr><td><span class="mth mg">GET</span></td><td class="ep">/api/locations/india/cities?state=X</td><td>None</td><td>Cities for a given state</td></tr>
+      <tr><td><span class="mth mg">GET</span></td><td class="ep">/api/locations/reverse-geocode?lat&amp;lon</td><td>None</td><td>Coordinates → state + city via Nominatim</td></tr>
+      <tr><td><span class="mth mg">GET</span></td><td class="ep">/api/admin/training-candidates</td><td>Admin</td><td>View pending user corrections for review</td></tr>
+      <tr><td><span class="mth mb">POST</span></td><td class="ep">/api/admin/training-candidates/:id/review</td><td>Admin</td><td>Approve or reject a training candidate</td></tr>
+      <tr><td><span class="mth mg">GET</span></td><td class="ep">/api/admin/approved-dataset</td><td>Admin</td><td>Download manifest for offline retraining</td></tr>
+    </tbody>
+  </table>
+
+  <div class="ibox">
+    <div style="font-size:11px;color:#64748b;margin-bottom:6px">EXAMPLE — POST /api/classify/image response</div>
+<pre>{
+  "found": true,  "classifier": "TensorflowClassifier",  "tf_class": "bottle",
+  "confidence": 0.995,  "category": "Plastic",  "recyclable": "conditional",
+  "bin_label": "Blue Bin",  "disposal_method": "Rinse and place in blue recycling bin.",
+  "location": { "country": "India", "state": "Telangana", "city": "Hyderabad" },
+  "points_awarded": 10,  "impact": { "co2_saved_grams": 420 }
+}</pre>
+  </div>
+</div>
+
+<!-- ─────────────── SLIDE 11: IBM BOB ─────────────── -->
+<div class="slide" id="s11">
+  <div class="sh"><span class="sn">11</span><h2 class="st">IBM Bob <span class="sa">Usage</span></h2></div>
+
+  <div style="margin-bottom:14px;font-size:13px;color:#94a3b8;line-height:1.6">
+    IBM Bob (AI software engineering assistant) was used as the <strong style="color:#f1f5f9">primary development tool</strong> for the complete v2.0 implementation.
+  </div>
+
+  <div class="g2" style="margin-bottom:14px">
+    <div class="bi"><span class="tool">Project Inspection</span> — Read all source files, routes, services, tests, and docs before any change. Confirmed: no YOLO, no MongoDB present.</div>
+    <div class="bi"><span class="tool">Environment Analysis</span> — Discovered Node v24 NAPI mismatch, Python 3.14 TF wheel gap, found Python 3.10 + TF 2.20 already installed. Adapted the solution.</div>
+    <div class="bi"><span class="tool">TFLite Integration</span> — Binary analysis of model_unquant.tflite (FlatBuffer format). Created Python subprocess bridge. Verified real inference: bottle = 99.5%.</div>
+    <div class="bi"><span class="tool">Camera Implementation</span> — Full CameraCapture.jsx: getUserMedia, flip front↔rear, canvas capture, retake, all permission error cases, stream teardown.</div>
+    <div class="bi"><span class="tool">Location System</span> — Created india_locations.json (36 states/UTs + cities), LocationSelector.jsx, reverse geocoding via Nominatim (no API key).</div>
+    <div class="bi"><span class="tool">Backend Development</span> — Updated 4 route files, created admin workflow, training candidates pipeline, updated SQLite schema with new tables.</div>
+    <div class="bi"><span class="tool">Testing</span> — Maintained 66/66 tests passing throughout all changes. Ran npm test after every significant modification.</div>
+    <div class="bi"><span class="tool">Documentation</span> — Rewrote README, ML_PIPELINE.md, SETUP.md, ARCHITECTURE.md, API.md, IBM_BOB_USAGE.md to reflect actual implementation.</div>
+  </div>
+
+  <div class="ibox gr" style="display:flex;gap:14px;flex-wrap:wrap">
+    <span style="font-size:12px;color:#86efac">✓ read_file — inspect codebase</span>
+    <span style="font-size:12px;color:#86efac">✓ grep — search patterns</span>
+    <span style="font-size:12px;color:#86efac">✓ write_file — create services</span>
+    <span style="font-size:12px;color:#86efac">✓ apply_diff — surgical edits</span>
+    <span style="font-size:12px;color:#86efac">✓ execute_command — npm test, node scripts</span>
+    <span style="font-size:12px;color:#86efac">✓ update_todo_list — track 14+ tasks</span>
+    <span style="font-size:12px;color:#86efac">✓ spawn_subagent — parallel analysis</span>
+  </div>
+</div>
+
+<!-- ─────────────── SLIDE 12: RESULTS ─────────────── -->
+<div class="slide" id="s12">
+  <div class="sh"><span class="sn">12</span><h2 class="st">Results &amp; <span class="sa">Conclusion</span></h2></div>
+
+  <div class="g4" style="margin-bottom:18px">
+    <div class="card" style="text-align:center"><div class="snum">99.5%</div><div class="slbl">TFLite model confidence on real bottle image</div></div>
+    <div class="card" style="text-align:center"><div class="snum">66</div><div class="slbl">Tests passing (unit + API integration)</div></div>
+    <div class="card" style="text-align:center"><div class="snum">36</div><div class="slbl">India states + UTs with city data</div></div>
+    <div class="card" style="text-align:center"><div class="snum">10</div><div class="slbl">Canonical waste categories</div></div>
+  </div>
+
+  <div class="g2" style="margin-bottom:18px">
+    <div>
+      <div class="sl" style="margin-bottom:8px">What Works ✅</div>
+      <ul class="slist">
+        <li>Real TFLite inference (not simulated or mocked)</li>
+        <li>Camera with flip + retake + permission handling</li>
+        <li>Location-aware rules for all 36 India states/UTs</li>
+        <li>Honest confidence — no fake predictions ever</li>
+        <li>User corrections → admin-reviewed training pipeline</li>
+        <li>Full gamification (points, badges, streaks, leaderboard)</li>
+        <li>Environmental impact tracking per classification</li>
+        <li>66 automated tests — all passing</li>
+      </ul>
+    </div>
+    <div>
+      <div class="sl" style="color:#ef4444;margin-bottom:8px">Scope &amp; Constraints</div>
+      <ul class="plist">
+        <li>Model trained on 2 classes only — <strong>fully retrainable</strong> with Teachable Machine</li>
+        <li>Local recycling rules are sample data — clearly marked, not official municipal rules</li>
+        <li>sql.js in-memory DB — suitable for demo/MVP scale</li>
+        <li>Python 3.10 + TensorFlow 2.20 required for AI inference</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="rrow" style="margin-bottom:20px">
+    <span class="rp">🤖 TFLite: LIVE</span>
+    <span class="rp">📸 Camera: LIVE</span>
+    <span class="rp">📍 Location: LIVE</span>
+    <span class="rp">✅ 66 Tests: PASS</span>
+    <span class="rp">🚫 YOLO: ZERO</span>
+    <span class="rp">🚫 MongoDB: ZERO</span>
+  </div>
+
+  <div class="foot">Made with IBM Bob &nbsp;·&nbsp; WHERE TO DROP WASTE &nbsp;·&nbsp; 2025</div>
+</div>
+
+</div><!-- slides-wrap -->
+
+<!-- Dot nav -->
+<div class="dot-nav" id="dots"></div>
+
+<script>
+const TOTAL = 12;
+let cur = 1;
+
+const dotNav = document.getElementById('dots');
+for (let i = 1; i <= TOTAL; i++) {
+  const d = document.createElement('button');
+  d.className = 'dot' + (i === 1 ? ' active' : '');
+  d.onclick = () => goTo(i);
+  dotNav.appendChild(d);
+}
+
+function goTo(n) {
+  document.getElementById('s' + cur).classList.remove('active');
+  dotNav.children[cur - 1].classList.remove('active');
+  cur = Math.max(1, Math.min(TOTAL, n));
+  document.getElementById('s' + cur).classList.add('active');
+  dotNav.children[cur - 1].classList.add('active');
+  document.getElementById('counter').textContent = cur + ' / ' + TOTAL;
+  window.scrollTo(0, 0);
+}
+
+function nextSlide() { goTo(cur + 1); }
+function prevSlide() { goTo(cur - 1); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') nextSlide();
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   prevSlide();
+});
+</script>
+</body>
+</html>
