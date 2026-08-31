@@ -10,6 +10,11 @@ People want to recycle but often don't know which category an item belongs to, w
 
 ---
 
+## Contributors
+
+
+---
+
 ## ✅ Implemented Features
 
 | Feature | Status |
