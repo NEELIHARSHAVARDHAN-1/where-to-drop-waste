@@ -10,14 +10,17 @@
     "lint": "eslint src --ext js,jsx"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.116.0",
+    "@tensorflow/tfjs": "^4.22.0",
+    "@tensorflow/tfjs-tflite": "^0.0.1-alpha.10",
     "axios": "^1.6.2",
+    "clsx": "^2.0.0",
+    "lucide-react": "^0.303.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.21.1",
-    "recharts": "^2.10.1",
     "react-hot-toast": "^2.4.1",
-    "lucide-react": "^0.303.0",
-    "clsx": "^2.0.0"
+    "react-router-dom": "^6.21.1",
+    "recharts": "^2.10.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",

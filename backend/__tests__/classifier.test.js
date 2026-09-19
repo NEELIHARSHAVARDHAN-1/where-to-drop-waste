@@ -8,7 +8,7 @@ const { LocalTextClassifier } = require('../src/services/classifier');
 const { calculateImpact } = require('../src/services/impactService');
 const { initializeDatabase } = require('../src/database/db');
 const { mapLabelToCategory, WASTE_CATEGORIES } = require('../src/services/vision/wasteCategoryMapping');
-const { getModelStatus } = require('../src/services/vision/tensorflowService');
+const { getModelStatus } = require('../src/services/vision/tensorflowLiteService');
 const { readAndValidateImage, validateImageBuffer } = require('../src/services/vision/preprocessing');
 
 let classifier;
