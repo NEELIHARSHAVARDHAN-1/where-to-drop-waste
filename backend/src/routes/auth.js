@@ -5,18 +5,30 @@ const { body, validationResult } = require('express-validator');
 const { v4: uuidv4 } = require('uuid');
 const { getDb } = require('../database/db');
 const { awardPoints, updateStreak } = require('../services/gamificationService');
+const { verifyToken } = require('../services/supabaseClient');
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret_change_in_production';
+const USE_SUPABASE = !!(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
 
-// Middleware to verify JWT
-function authMiddleware(req, res, next) {
+/**
+ * Dual-mode auth middleware.
+ * - With Supabase: verifies access_token via supabase.auth.getUser()
+ * - Without Supabase: verifies legacy JWT via jsonwebtoken
+ * Sets req.user = { id, email, name }
+ */
+async function authMiddleware(req, res, next) {
   const header = req.headers.authorization;
   if (!header) return res.status(401).json({ error: 'Authorization header required' });
   const token = header.replace('Bearer ', '');
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded;
+    if (USE_SUPABASE) {
+      const supabaseUser = await verifyToken(token);
+      req.user = { id: supabaseUser.id, email: supabaseUser.email, name: supabaseUser.user_metadata?.name };
+    } else {
+      const decoded = jwt.verify(token, JWT_SECRET);
+      req.user = decoded;
+    }
     next();
   } catch {
     res.status(401).json({ error: 'Invalid or expired token' });

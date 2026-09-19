@@ -1,186 +1,268 @@
-# Setup Guide — WHERE TO DROP WASTE
+# WHERE TO DROP WASTE — Setup Guide
 
 ## Prerequisites
 
-- Node.js v18 or higher (tested on v24)
-- npm v9 or higher
-- No native build tools required (uses sql.js pure JavaScript SQLite)
+| Requirement | Version | Notes |
+|---|---|---|
+| Node.js | v18+ (tested v24) | `node --version` |
+| npm | v9+ | `npm --version` |
+| Python | 3.10 (for backend TF fallback) | `py -0` |
+| TensorFlow | 2.20+ (Python 3.10) | `py -3.10 -c "import tensorflow"` |
 
-## Step-by-Step Setup
-
-### 1. Backend
+## Quick Start (Local — no Supabase needed)
 
 ```bash
-cd waste-segregation-app/backend
-
-# Copy environment configuration
-cp .env.example .env
-
-# Edit .env — at minimum change JWT_SECRET for production
-# JWT_SECRET=your_strong_random_secret_here
-
-# Install dependencies
+# 1. Backend
+cd backend
+cp .env.example .env          # edit JWT_SECRET at minimum
 npm install
+npm start                     # http://localhost:4000
 
-# Start the server
-npm start
-```
-
-Verify: `http://localhost:4000/api/health` should return `{"status":"ok","name":"WHERE TO DROP WASTE"}`
-
-On first start, the database is automatically created and seeded with demo data.
-
-### 2. Frontend
-
-```bash
-cd waste-segregation-app/frontend
-
-# Copy environment configuration
-cp .env.example .env
-
-# Install dependencies
+# 2. Frontend
+cd frontend
+cp .env.example .env          # set VITE_API_URL=http://localhost:4000
 npm install
+npm run dev                   # http://localhost:3000
 
-# Start development server
-npm run dev
+# 3. Run tests
+cd backend
+npm test                      # 66 tests, all passing
 ```
 
-Visit: `http://localhost:3000`
+Demo login: `demo@wasteseg.app` / `Demo@123`
 
-### 3. Run Tests
+---
+
+## AI Classification Architecture
+
+### NEW: Browser-side inference (fast)
+
+```
+User uploads image / captures with camera
+         ↓
+  tfliteClassifier.js (browser)
+         ↓
+  @tensorflow/tfjs-tflite (WASM)
+         ↓
+  model_unquant.tflite  ←  /public/models/
+         ↓
+  Instant result (no backend round-trip)
+         ↓
+  Backend called only to PERSIST result + award points
+```
+
+- Model loaded **once** on page open, cached in memory
+- Subsequent classifications are **nearly instant**
+- No Python subprocess for normal user requests
+
+### Backend TFLite (fallback)
+
+The backend still runs `tflite_infer.py` via Python 3.10 for:
+- File upload classification when JS is unavailable
+- Admin/batch processing
+- Health check / model-status endpoint
+
+---
+
+## Supabase Setup (Production)
+
+### 1. Create a Supabase project
+
+Go to [supabase.com](https://supabase.com), create a new project.
+
+### 2. Run SQL migrations
+
+In the Supabase SQL Editor, run these files **in order**:
+
+```
+supabase/migrations/001_initial_schema.sql
+supabase/migrations/002_rls_policies.sql
+```
+
+### 3. Configure environment variables
+
+**Backend `.env`:**
+```env
+SUPABASE_URL=https://your-project-ref.supabase.co
+SUPABASE_SERVICE_ROLE_KEY="your key"  ← from Project Settings → API → service_role
+```
+
+**Frontend `.env`:**
+```env
+VITE_SUPABASE_URL=https://your-project-ref.supabase.co
+VITE_SUPABASE_ANON_KEY="your key"    ← from Project Settings → API → anon (public)
+```
+
+> **NEVER** put the service_role key in frontend `.env` or `VITE_` variables.
+
+### 4. Authentication mode
+
+With Supabase env vars set:
+- Frontend uses `supabase.auth.signInWithPassword()` / `signUp()`
+- Access token forwarded to backend as `Authorization: Bearer <token>`
+- Backend verifies via `supabase.auth.getUser(token)` — never trusts client-side user_id
+
+Without Supabase env vars:
+- Falls back to custom JWT (`/api/auth/login` → `{ token, user }`)
+- Local development works with no cloud services
+
+### 5. Storage bucket (for image persistence)
+
+In Supabase Storage, create a bucket named `waste-images`:
+- Set to **private** (users access only their own images via RLS)
+- Optional: set 5MB file size limit
+
+---
+
+## Vercel Deployment
+
+### Option A — Monorepo (recommended)
 
 ```bash
-cd waste-segregation-app/backend
-npm test
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy from project root
+vercel
 ```
 
-Expected: **66 tests passing**.
+The `vercel.json` at the project root routes:
+- `/api/*` → `backend/api/index.js` (serverless Node.js)
+- `/*` → `frontend/dist/` (static React build)
 
-### 4. TensorFlow / Teachable Machine Model (already included)
+### Option B — Separate deployments
 
-The model files are already present in the repository:
-
-```
-backend/models/teachable_machine/
-    model_unquant.tflite    ← TFLite model (2 MB)
-    labels.txt              ← class labels
-```
-
-Python 3.10 and TensorFlow 2.20 are **required** to run AI inference:
-
+**Frontend → Vercel:**
 ```bash
-# Verify Python 3.10 is installed
-py -0   # should list Python 3.10
-
-# Verify TensorFlow is installed
-py -3.10 -c "import tensorflow; print(tensorflow.__version__)"
-# Expected: 2.x.x
-
-# Verify Pillow
-py -3.10 -c "import PIL; print('OK')"
-
-# If not installed:
-py -3.10 -m pip install tensorflow Pillow
+cd frontend
+vercel
+# Set VITE_API_URL to your backend URL
+# Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY
 ```
 
-**Without Python/TF:** The application runs fully. Text classification and image-with-hint classification work. Camera capture works (uses same API). Image-only classification shows a clear "model unavailable" message without fake predictions.
+**Backend → Railway (recommended for Python TF support):**
+```bash
+# Railway supports Python + Node.js together
+# Add environment variables in Railway dashboard
+# Set FRONTEND_URL to your Vercel frontend URL
+```
 
-**To retrain with more waste classes:**
-1. Go to https://teachablemachine.withgoogle.com/
-2. Create an Image Project → add classes → train
+### Vercel environment variables
+
+Set these in **Vercel Dashboard → Settings → Environment Variables**:
+
+| Variable | Where | Value |
+|---|---|---|
+| `VITE_API_URL` | Frontend | Your backend URL |
+| `VITE_SUPABASE_URL` | Frontend | Your Supabase URL |
+| `VITE_SUPABASE_ANON_KEY` | Frontend | Supabase anon key |
+| `SUPABASE_URL` | Backend | Your Supabase URL |
+| `SUPABASE_SERVICE_ROLE_KEY` | Backend | **Secret** — service role key |
+| `JWT_SECRET` | Backend | Random secret string |
+| `FRONTEND_URL` | Backend | Your Vercel frontend URL |
+
+---
+
+## TFLite Model
+
+### Browser inference (primary)
+
+Model files served as static assets:
+```
+frontend/public/models/
+    model_unquant.tflite    ← 2 MB — served as /models/model_unquant.tflite
+    labels.txt              ← 16 classes
+```
+
+### Current model labels (16 classes)
+
+```
+0  Background
+1  Crumpled Paper     → Paper/Cardboard
+2  Remote             → E-waste
+3  HW Battery         → E-waste
+4  Screw Driver       → Metal
+5  Pen                → General Waste
+6  Brush              → General Waste
+7  Id card            → General Waste
+8  Shuttlecock        → General Waste
+9  Bottle             → Plastic
+10 Fork or Spoon      → Metal
+11 Knife              → Metal
+12 Paste              → General Waste
+13 Chocolate Wrapper  → General Waste
+14 Tablet             → E-waste
+15 Scissor            → Metal
+```
+
+### To retrain with more classes
+
+1. Go to [teachablemachine.withgoogle.com](https://teachablemachine.withgoogle.com)
+2. Create Image Project → add waste classes → train
 3. Export → **TensorFlow Lite** → Download
-4. Replace `model_unquant.tflite` and `labels.txt` in `backend/models/teachable_machine/`
-5. Restart the backend server
+4. Replace `frontend/public/models/model_unquant.tflite` and `labels.txt`
+5. Also replace `backend/models/teachable_machine/model_unquant.tflite` and `labels.txt`
+6. Update `backend/src/services/vision/wasteCategoryMapping.js` with new labels
 
-### 5. Admin Setup (optional)
+---
 
-To enable admin features for reviewing training candidates:
+## Camera Requirements
 
-1. Register a user account at `http://localhost:3000/register`
-2. Note your user ID from the JWT or GET /api/auth/me
-3. Bootstrap admin access (only works when no admins exist yet):
-   ```bash
-   curl -X POST http://localhost:4000/api/admin/grant \
-     -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-     -H "Content-Type: application/json"
-   ```
-4. Admin APIs are now accessible with your token at `/api/admin/*`
-
-## Demo Login
-
-After starting the app:
-- **Email:** `demo@wasteseg.app`
-- **Password:** `Demo@123`
-
-Or any of the other demo accounts listed in `README.md`.
-
-## Camera Usage
-
-The camera feature uses browser APIs:
-- Works in: Chrome, Firefox, Safari (iOS 14.3+), Edge
+- Works on: Chrome, Firefox, Safari (iOS 14.3+), Edge
 - Requires HTTPS in production (localhost is exempt)
-- User must grant camera permission when prompted
-- If denied: the file upload option still works
+- Default camera: rear (`environment`)
+- Flip button switches to front (`user`)
+- Camera tracks properly cleaned up on component close
 
-## Location Features
+---
 
-- Location dropdown loads from `/api/locations/india/states` and `/api/locations/india/cities`
-- "Use My Location" requires browser geolocation permission
-- Reverse geocoding uses Nominatim (OpenStreetMap) — free, no API key required
+## Security Model
 
-## Environment Variables
+| Attack | Mitigation |
+|---|---|
+| Password storage | Supabase Auth handles bcrypt hashing — never plain text |
+| Points manipulation | Points updated only via server-side `award_points()` RPC |
+| User impersonation | user_id derived from verified Supabase access token, never trusted from client |
+| Cross-user data access | Row Level Security (RLS) on all user tables |
+| Secret key exposure | SERVICE_ROLE_KEY only in backend `.env`, never in VITE_ vars |
+| XSS | helmet, input validation via express-validator |
+| CSRF | JWT Bearer tokens (not cookies) |
+| Rate abuse | express-rate-limit: 200 req/15min |
+| Large uploads | multer 5MB limit + magic bytes validation |
 
-### Backend (`backend/.env`)
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `PORT` | API server port | `4000` |
-| `NODE_ENV` | Environment | `development` |
-| `JWT_SECRET` | **Change in production** | `dev_secret_change_in_production` |
-| `DB_PATH` | SQLite database file path | `./data/waste_app.db` |
-| `UPLOAD_DIR` | Image upload directory | `./uploads` |
-| `MAX_FILE_SIZE_MB` | Max image upload size | `5` |
-| `TF_MODEL_DIR` | Path to TF model directory | `./models/teachable_machine` |
-| `TF_CONFIDENCE_THRESHOLD` | Min confidence for TF classification | `0.70` |
-| `FRONTEND_URL` | Frontend URL for CORS | `http://localhost:3000` |
-
-### Frontend (`frontend/.env`)
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `VITE_API_URL` | Backend API URL | `http://localhost:4000` |
+---
 
 ## Troubleshooting
 
-**Port already in use:**
-```powershell
-# Change PORT in backend/.env
-PORT=4001
+**Frontend can't connect to backend:**
+```
+Check VITE_API_URL in frontend/.env
+Ensure FRONTEND_URL in backend/.env includes your frontend origin
 ```
 
-**Database issues:**
-```powershell
-# Delete the DB to recreate from scratch
-Remove-Item .\backend\data\waste_app.db
-npm start
+**TF model not loading in browser:**
+```
+Verify frontend/public/models/ contains model_unquant.tflite and labels.txt
+Check browser console for @tensorflow/tfjs-tflite WASM errors
+Ensure HTTPS for camera on non-localhost
 ```
 
-**Frontend can't reach backend:**
-- Check `VITE_API_URL` in `frontend/.env`
-- Ensure `FRONTEND_URL` in `backend/.env` matches your frontend URL
+**Supabase auth not working:**
+```
+Check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in frontend .env
+Check SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in backend .env
+Run SQL migrations in Supabase SQL Editor
+```
 
-**TF model not loading:**
-- Verify Python 3.10 is installed: `py -0`
-- Verify TensorFlow: `py -3.10 -c "import tensorflow; print('OK')"`
-- Install if missing: `py -3.10 -m pip install tensorflow Pillow`
-- Check `backend/models/teachable_machine/` contains `model_unquant.tflite` and `labels.txt`
-- Check `GET http://localhost:4000/api/classify/model-status` for details
-
-**Camera permission denied:**
-- Click the lock icon in your browser's address bar → allow camera
-- Or use the file upload option instead
+**Python TFLite backend fallback:**
+```
+py -0                                               # should list 3.10
+py -3.10 -c "import tensorflow; print('OK')"        # should print OK
+py -3.10 -m pip install tensorflow Pillow           # install if missing
+```
 
 **Tests failing:**
-- Run `npm install` first
-- Delete test DB files: `backend/data/test_*.db`
-- Run `npm test` again
+```
+cd backend && npm install && npm test
+Delete backend/data/test_*.db and retry
+```

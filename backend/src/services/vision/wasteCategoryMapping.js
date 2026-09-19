@@ -24,6 +24,24 @@
  * Add or update entries to match your specific model's labels.
  */
 const LABEL_TO_CATEGORY = {
+  // ── Current model labels (labels.txt — 16 classes) ───────────────────────
+  'background':         'Non-recyclable/General Waste',
+  'crumpled paper':     'Paper/Cardboard',
+  'remote':             'E-waste',
+  'hw battery':         'E-waste',
+  'screw driver':       'Metal',
+  'pen':                'Non-recyclable/General Waste',
+  'brush':              'Non-recyclable/General Waste',
+  'id card':            'Non-recyclable/General Waste',
+  'shuttlecock':        'Non-recyclable/General Waste',
+  'bottle':             'Plastic',
+  'fork or spoon':      'Metal',
+  'knife':              'Metal',
+  'paste':              'Non-recyclable/General Waste',
+  'chocolate wrapper':  'Non-recyclable/General Waste',
+  'tablet':             'E-waste',
+  'scissor':            'Metal',
+
   // ── Plastic ───────────────────────────────────────────────────────────────
   'plastic_bottle': 'Plastic',
   'plastic bottle': 'Plastic',

@@ -6,9 +6,11 @@ const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
 
-// Initialize TF model in background (non-blocking)
+// TFLite backend inference is now OPTIONAL — normal classification happens in-browser.
+// Backend model init is still attempted so /classify/image fallback (file uploads
+// without browser JS) continues to work when Python is available.
 const { initializeModel } = require('./services/vision/tensorflowLiteService');
-initializeModel().catch(e => console.warn('[App] TF model init:', e.message));
+initializeModel().catch(e => console.info('[App] TF backend model (optional):', e.message));
 
 const app = express();
 

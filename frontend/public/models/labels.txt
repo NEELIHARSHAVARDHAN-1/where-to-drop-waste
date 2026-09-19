@@ -1,0 +1,16 @@
+0 Background
+1 Crumpled Paper
+2 Remote
+3 HW Battery
+4 Screw Driver
+5 Pen
+6 Brush
+7 Id card
+8 Shuttlecock
+9 Bottle
+10 Fork or Spoon
+11 Knife
+12 Paste
+13 Chocolate Wrapper
+14 Tablet
+15 Scissor
