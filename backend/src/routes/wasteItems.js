@@ -1,40 +1,41 @@
 const express = require('express');
-const { getDb } = require('../database/db');
+const { getWasteItems, getWasteCategories, getWasteItemById } = require('../services/wasteItemService');
 const router = express.Router();
 
 // GET /api/waste-items?category=Plastic&search=bottle
-router.get('/', (req, res) => {
-  const db = getDb();
+router.get('/', async (req, res) => {
   const { category, search, recyclable } = req.query;
 
-  let query = 'SELECT * FROM waste_items WHERE 1=1';
-  const params = [];
-
-  if (category) { query += ' AND category = ?'; params.push(category); }
-  if (recyclable) { query += ' AND recyclable = ?'; params.push(recyclable); }
-  if (search) {
-    query += ' AND (name LIKE ? OR aliases LIKE ?)';
-    params.push(`%${search}%`, `%${search}%`);
+  try {
+    const items = await getWasteItems({ category, search, recyclable });
+    res.json(items);
+  } catch (err) {
+    console.error('[WasteItems] Error fetching waste items:', err.message);
+    res.status(500).json({ error: 'Failed to fetch waste items' });
   }
-  query += ' ORDER BY name ASC';
-
-  const items = db.prepare(query).all(...params);
-  res.json(items);
 });
 
 // GET /api/waste-items/categories — list all unique categories
-router.get('/categories', (req, res) => {
-  const db = getDb();
-  const cats = db.prepare('SELECT DISTINCT category FROM waste_items ORDER BY category').all().map(r => r.category);
-  res.json(cats);
+router.get('/categories', async (req, res) => {
+  try {
+    const categories = await getWasteCategories();
+    res.json(categories);
+  } catch (err) {
+    console.error('[WasteItems] Error fetching categories:', err.message);
+    res.status(500).json({ error: 'Failed to fetch categories' });
+  }
 });
 
 // GET /api/waste-items/:id
-router.get('/:id', (req, res) => {
-  const db = getDb();
-  const item = db.prepare('SELECT * FROM waste_items WHERE id = ?').get(req.params.id);
-  if (!item) return res.status(404).json({ error: 'Waste item not found' });
-  res.json(item);
+router.get('/:id', async (req, res) => {
+  try {
+    const item = await getWasteItemById(req.params.id);
+    if (!item) return res.status(404).json({ error: 'Waste item not found' });
+    res.json(item);
+  } catch (err) {
+    console.error('[WasteItems] Error fetching waste item:', err.message);
+    res.status(500).json({ error: 'Failed to fetch waste item' });
+  }
 });
 
 module.exports = router;

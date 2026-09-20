@@ -1,10 +1,31 @@
+# Dependencies
 node_modules/
+
+# Environment files (never commit secrets)
 .env
-*.log
+.env.*
+!.env.example
+
+# Build outputs
 dist/
 build/
+
+# Uploads and data
+uploads/
+*.db
+*.sqlite
+
+# Logs
+logs/
+*.log
+
+# Operating System & IDE
 .DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Python cache
 __pycache__/
 *.pyc
 .pytest_cache/
-uploads/

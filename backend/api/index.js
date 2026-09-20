@@ -1,30 +1,34 @@
 /**
- * Vercel serverless entry point for the backend.
+ * Vercel Serverless Entry Point for the Express Backend.
  *
  * Exports the Express app as a serverless handler.
- * Vercel wraps this and handles routing via vercel.json.
+ * Vercel routes incoming requests via vercel.json.
  *
  * Important:
- *   - No app.listen() here — Vercel manages the server lifecycle.
- *   - The database is initialized on first invocation.
- *   - sql.js in-memory DB is ephemeral on serverless; use Supabase for production.
+ *   - No app.listen() — Vercel manages the serverless process lifecycle.
+ *   - Uses Appwrite for persistent cloud database, storage, and authentication.
+ *   - Local SQLite is only initialized if Appwrite is not configured (local/preview fallback).
  */
 
 'use strict';
 
-const { initializeDatabase } = require('./src/database/db');
+const app = require('../src/app');
+const { USE_APPWRITE } = require('../src/config/appwrite');
 
-// Initialize database once (module-level — reused across invocations in the same container)
 let _dbInitialized = false;
-async function ensureDb() {
-  if (_dbInitialized) return;
-  await initializeDatabase();
-  _dbInitialized = true;
+
+async function ensureFallbackDb() {
+  if (_dbInitialized || USE_APPWRITE) return;
+  try {
+    const { initializeDatabase } = require('../src/database/db');
+    await initializeDatabase();
+    _dbInitialized = true;
+  } catch (err) {
+    console.warn('[Vercel Serverless] Fallback DB init notice:', err.message);
+  }
 }
 
-const app = require('./src/app');
-
 module.exports = async (req, res) => {
-  await ensureDb();
-  app(req, res);
+  await ensureFallbackDb();
+  return app(req, res);
 };

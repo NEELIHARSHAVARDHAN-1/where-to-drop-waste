@@ -46,7 +46,8 @@ People want to recycle but often don't know which category an item belongs to, w
 | 10 waste categories | ✅ |
 | Classification history | ✅ |
 | No YOLO / No Ultralytics | ✅ (confirmed) |
-| No MongoDB / No cloud DB | ✅ (SQL.js / SQLite) |
+| Appwrite Cloud Persistence (Auth, Database, Storage) | ✅ (Production) |
+| Optional Local SQLite Fallback | ✅ (Offline dev) |
 
 ---
 

@@ -1,29 +1,29 @@
 const express = require('express');
-const { getDb } = require('../database/db');
+const { getTips, getDailyTip } = require('../services/tipService');
 const router = express.Router();
 
 // GET /api/tips?type=eco_fact&count=1
-router.get('/', (req, res) => {
-  const db = getDb();
+router.get('/', async (req, res) => {
   const { type, category, count } = req.query;
-  const limit = Math.min(parseInt(count) || 5, 20);
 
-  let query = 'SELECT * FROM eco_tips WHERE is_active = 1';
-  const params = [];
-  if (type) { query += ' AND tip_type = ?'; params.push(type); }
-  if (category) { query += ' AND category = ?'; params.push(category); }
-  query += ' ORDER BY RANDOM() LIMIT ?';
-  params.push(limit);
-
-  const tips = db.prepare(query).all(...params);
-  res.json(tips);
+  try {
+    const tips = await getTips({ type, category, count });
+    res.json(tips);
+  } catch (err) {
+    console.error('[Tips] Error fetching tips:', err.message);
+    res.status(500).json({ error: 'Failed to fetch tips' });
+  }
 });
 
 // GET /api/tips/daily — one random daily tip
-router.get('/daily', (req, res) => {
-  const db = getDb();
-  const tip = db.prepare('SELECT * FROM eco_tips WHERE is_active = 1 ORDER BY RANDOM() LIMIT 1').get();
-  res.json(tip || null);
+router.get('/daily', async (req, res) => {
+  try {
+    const tip = await getDailyTip();
+    res.json(tip || null);
+  } catch (err) {
+    console.error('[Tips] Error fetching daily tip:', err.message);
+    res.status(500).json({ error: 'Failed to fetch daily tip' });
+  }
 });
 
 module.exports = router;
