@@ -137,28 +137,30 @@ The `vercel.json` at the project root routes:
 cd frontend
 vercel
 # Set VITE_API_URL to your backend URL
-# Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY
+# Set VITE_APPWRITE_ENDPOINT and VITE_APPWRITE_PROJECT_ID
 ```
 
-**Backend → Railway (recommended for Python TF support):**
+**Backend → Vercel Serverless or Container:**
 ```bash
-# Railway supports Python + Node.js together
-# Add environment variables in Railway dashboard
+# Set APPWRITE_ENDPOINT, APPWRITE_PROJECT_ID, APPWRITE_API_KEY
+# Set APPWRITE_DATABASE_ID, APPWRITE_STORAGE_BUCKET_ID
 # Set FRONTEND_URL to your Vercel frontend URL
 ```
 
-### Vercel environment variables
+### Environment variables (Appwrite & Deployment)
 
-Set these in **Vercel Dashboard → Settings → Environment Variables**:
+For detailed Appwrite setup, see [docs/APPWRITE_SETUP.md](APPWRITE_SETUP.md).
 
 | Variable | Where | Value |
 |---|---|---|
-| `VITE_API_URL` | Frontend | Your backend URL |
-| `VITE_SUPABASE_URL` | Frontend | Your Supabase URL |
-| `VITE_SUPABASE_ANON_KEY` | Frontend | Supabase anon key |
-| `SUPABASE_URL` | Backend | Your Supabase URL |
-| `SUPABASE_SERVICE_ROLE_KEY` | Backend | **Secret** — service role key |
-| `JWT_SECRET` | Backend | Random secret string |
+| `VITE_API_URL` | Frontend | Production backend URL |
+| `VITE_APPWRITE_ENDPOINT` | Frontend | Appwrite endpoint (e.g. `https://cloud.appwrite.io/v1`) |
+| `VITE_APPWRITE_PROJECT_ID` | Frontend | Public Appwrite Project ID |
+| `APPWRITE_ENDPOINT` | Backend | Appwrite endpoint |
+| `APPWRITE_PROJECT_ID` | Backend | Appwrite Project ID |
+| `APPWRITE_API_KEY` | Backend | **Secret** — Server API key |
+| `APPWRITE_DATABASE_ID` | Backend | Appwrite Database ID (`waste_segregation_db`) |
+| `APPWRITE_STORAGE_BUCKET_ID` | Backend | Storage Bucket ID (`waste_images`) |
 | `FRONTEND_URL` | Backend | Your Vercel frontend URL |
 
 ---

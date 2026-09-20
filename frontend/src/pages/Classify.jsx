@@ -6,6 +6,7 @@ import toast from 'react-hot-toast'
 import clsx from 'clsx'
 import CameraCapture from '../components/CameraCapture'
 import LocationSelector from '../components/LocationSelector'
+import { classifyImage } from '../services/tfliteClassifier'
 
 const BIN_COLORS = {
   blue: 'bg-blue-100 border-blue-400 text-blue-800',
@@ -67,15 +68,68 @@ export default function Classify() {
     setResult(null)
     setConfirmed(null)
     setCorrectionSubmitted(false)
+
+    const hint = sourceHint || imageHint
+
+    // Step 1: Attempt fast in-browser TFLite inference
+    try {
+      const tfPrediction = await classifyImage(fileToSend)
+
+      if (tfPrediction && tfPrediction.className) {
+        // Step 2: Persist classification to Appwrite/backend and retrieve full recycling guidance
+        try {
+          const persistRes = await api.post('/classify/persist', {
+            className: tfPrediction.className,
+            confidence: tfPrediction.confidence,
+            hint,
+            country,
+            state,
+            city,
+            allPredictions: tfPrediction.allPredictions,
+          })
+          setResult(persistRes.data)
+          if (persistRes.data.points_awarded) {
+            toast.success(`+${persistRes.data.points_awarded} points earned! 🎉`)
+          }
+          if (persistRes.data.save_warning) {
+            toast(persistRes.data.save_warning, { icon: '⚠️' })
+          }
+          return
+        } catch (persistErr) {
+          // Backend or Appwrite temporarily offline — display prediction result client-side
+          console.warn('[Classify] Backend persistence notice:', persistErr.message)
+          const isLow = tfPrediction.confidence < 0.70
+          setResult({
+            found: !isLow,
+            item_name: tfPrediction.className,
+            category: tfPrediction.className,
+            confidence: tfPrediction.confidence,
+            tf_confidence: tfPrediction.confidence,
+            recyclable: 'unknown',
+            bin_label: 'Check local guidelines',
+            bin_color: 'grey',
+            disposal_method: `Classified as ${tfPrediction.className}. Follow municipal recycling rules.`,
+            is_uncertain: isLow,
+            uncertainty_reason: isLow ? `Low confidence prediction (${Math.round(tfPrediction.confidence * 100)}%)` : null,
+            classifier: 'BrowserTFLite (Offline)',
+            save_warning: 'Server temporarily unavailable. Prediction shown, but points could not be saved.',
+          })
+          toast('Offline: Result displayed, points could not be saved.', { icon: 'ℹ️' })
+          return
+        }
+      }
+    } catch (browserTfErr) {
+      console.info('[Classify] Browser TFLite fallback to backend upload:', browserTfErr.message)
+    }
+
+    // Step 3: Server-side upload fallback if browser inference didn't run
     try {
       const formData = new FormData()
-      // Camera blob needs a filename; file uploads already have one
       if (fileToSend instanceof Blob && !(fileToSend instanceof File)) {
         formData.append('image', fileToSend, 'camera_capture.jpg')
       } else {
         formData.append('image', fileToSend)
       }
-      const hint = sourceHint || imageHint
       if (hint) formData.append('hint', hint)
       formData.append('country', country)
       formData.append('state', state)
